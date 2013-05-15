@@ -29,7 +29,7 @@ You can set a custom url:
 silkroad = Silkroad::Client.new 'rpcuser', 'rpcpass', url: 'https://yourbitcoinddaemon.com:31337'
 ```
 
-Now you can make RPC API calls (see the [API calls list](https://en.bitcoin.it/wiki/Original_Bitcoin_client/API_calls_list)). Pass params as per the spec, and the result will be returned as an array or hash (depending on the call):
+Now you can make RPC API calls (see the [API calls list](https://en.bitcoin.it/wiki/Original_Bitcoin_client/API_calls_list)). Pass params as per the spec, and the result will be returned as a primitive type (string, number, boolean, and nil) or structured type (object, array), depending on the call:
 
 ```ruby
 silkroad.rpc 'getbalance', 'derp@example.com' # => 31337
