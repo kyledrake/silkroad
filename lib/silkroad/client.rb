@@ -1,6 +1,7 @@
 module Silkroad
   class Client
     class Error < StandardError; end
+
     DEFAULT_PORT    = 8332
     JSONRPC_VERSION = '2.0'
 
@@ -36,7 +37,12 @@ module Silkroad
     end
 
     def send(request)
-      @http_client.post @url, request.to_json, {'Content-Type' => 'application/json'}
+      response = @http_client.post @url, request.to_json, {'Content-Type' => 'application/json'}
+
+      if response.status == 403 && response.body.empty?
+        raise Error, '403 Forbidden - check your user/pass and/or url, and ensure IP is whitelisted for remote connections'
+      end
+      response
     end
 
     def inspect
