@@ -21,36 +21,28 @@ Or install it yourself as:
 Initialize the client:
 
 ```ruby
-  
-    silkroad = Silkroad::Client.new 'rpcuser', 'rpcpass'
-
+silkroad = Silkroad::Client.new 'rpcuser', 'rpcpass'
 ```
 
 You can set a custom url:
 ```ruby
-  
-    silkroad = Silkroad::Client.new 'rpcuser', 'rpcpass', url: 'https://yourbitcoinddaemon.com:31337'
-  
+silkroad = Silkroad::Client.new 'rpcuser', 'rpcpass', url: 'https://yourbitcoinddaemon.com:31337'
 ```
 
 Now you can make RPC API calls (see the [API calls list](https://en.bitcoin.it/wiki/Original_Bitcoin_client/API_calls_list)). Pass params as per the spec, and the result will be returned as an array or hash (depending on the call):
 
 ```ruby
-  
-    silkroad.rpc 'getbalance', 'derp@example.com' # => 31337
-
+silkroad.rpc 'getbalance', 'derp@example.com' # => 31337
 ```
 
 Errors throw the `Silkroad::Client::Error` exception. Catch it if you want to do something custom:
 
 ```ruby
-
-    begin
-      silkroad.rpc 'failcmd', 'fail'
-    rescue Silkroad::Client::Error => e
-      puts "Error: #{e.inspect}"
-    end
-
+begin
+  silkroad.rpc 'failcmd', 'fail'
+rescue Silkroad::Client::Error => e
+  puts "Error: #{e.inspect}"
+end
 ```
 
 ### Batching
@@ -58,18 +50,16 @@ Errors throw the `Silkroad::Client::Error` exception. Catch it if you want to do
 If you use batching, it will throw all your requests into a JSON array, send them at once, and return all of them when they are done, per the [JSON-RPC spec](http://json-rpc.org/wiki/specification). Batch is much lower level, and does not raise exceptions on errors. You will need to look for the `response[index]['error']` in the return and handle it.
 
 ```ruby
+response = @silkroad.batch do
+  rpc 'getbalance', 'tyler@example.com'
+  rpc 'notworking', 'derp'
+end
 
-    response = @silkroad.batch do
-      rpc 'getbalance', 'tyler@example.com'
-      rpc 'notworking', 'derp'
-    end
-
-    # response is:
-    [
-      {result: 31337, error: nil, id: nil},
-      {result: nil, error: {code: -32601, message: 'Method not found'}, id: nil}
-    ]
-
+# response is:
+[
+  {result: 31337, error: nil, id: nil},
+  {result: nil, error: {code: -32601, message: 'Method not found'}, id: nil}
+]
 ```
 
 
