@@ -17,17 +17,19 @@ end
 
 describe Silkroad::Client do
   before do
-    @silkroad = Silkroad::Client.new('user', 'pass')
+    @silkroad = Silkroad::Client.new 'http://user:pass@localhost'
     WebMock.reset!
   end
 
   it 'sets url defaults correctly' do
-    silkroad = Silkroad::Client.new 'user', 'pass'
-    silkroad.uri.to_s.must_equal 'http://localhost:8332'
-    silkroad.user.must_equal 'user'
+    Proc.new { Silkroad::Client.new 'http://localhost' }.must_raise Silkroad::Client::Error
     
-    silkroad = Silkroad::Client.new 'user', 'pass', url: 'https://example.org:1234'
-    silkroad.uri.to_s.must_equal 'https://example.org:1234'
+    
+    silkroad = Silkroad::Client.new 'http://user:pass@localhost'
+    silkroad.uri.to_s.must_equal 'http://user:pass@localhost:8332'
+
+    silkroad = Silkroad::Client.new 'https://user:pass@example.org:1234'
+    silkroad.uri.to_s.must_equal 'https://user:pass@example.org:1234'
   end
 
   it 'makes a call' do

@@ -1,19 +1,17 @@
 module Silkroad
   class Client
     class Error < StandardError; end
-    attr_reader :user, :uri
+    attr_reader :uri
 
     DEFAULT_RPC_PORT = 8332
     TESTNET_RPC_PORT = 18332
     JSONRPC_VERSION  = '2.0'
 
-    def initialize(user, pass, opts={})
-      @user        = user
-      @opts        = opts
-      @uri         = URI.parse @opts[:url] || "http://localhost:#{DEFAULT_RPC_PORT}"
-      @uri.port    = DEFAULT_RPC_PORT if @opts[:url].nil? || (@uri.port == 80 && !@opts[:url].match(/:80/))
-      @user        = user
-      @pass        = pass
+    def initialize(uri, opts={})
+      @opts = opts
+      @uri = URI uri
+      raise Error, 'user and password required' unless @uri.user && @uri.password
+      @uri.port = DEFAULT_RPC_PORT if @uri.port.nil? || (@uri.port == 80 && !uri.match(/:80/))
     end
 
     def batch(requests=nil, &block)
@@ -40,7 +38,7 @@ module Silkroad
     def send(formdata)
       resp = Net::HTTP.start(@uri.host, @uri.port) do |http|
         req = Net::HTTP::Post.new '/'
-        req.basic_auth @user, @pass
+        req.basic_auth @uri.user, @uri.password
         req.add_field 'Content-Type', 'application/json'
         req.use_ssl = true if @uri.scheme == 'https'
         req.body = formdata.to_json
