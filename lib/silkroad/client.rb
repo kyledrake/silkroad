@@ -1,6 +1,7 @@
 module Silkroad
   class Client
     class Error < StandardError; end
+    attr_reader :user, :uri
 
     DEFAULT_RPC_PORT = 8332
     TESTNET_RPC_PORT = 18332
@@ -10,7 +11,7 @@ module Silkroad
       @user        = user
       @opts        = opts
       @uri         = URI.parse @opts[:url] || "http://localhost:#{DEFAULT_RPC_PORT}"
-      @uri.port    = DEFAULT_RPC_PORT if @opts[:url].nil? || !@opts[:url].match(/:80/)
+      @uri.port    = DEFAULT_RPC_PORT if @opts[:url].nil? || (@uri.port == 80 && !@opts[:url].match(/:80/))
       @user        = user
       @pass        = pass
     end
