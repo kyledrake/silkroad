@@ -1,5 +1,5 @@
-require "httpclient"
-require "addressable/uri"
+require "uri"
+require "net/http"
 require "json"
 require "silkroad/batch"
 require "silkroad/client"

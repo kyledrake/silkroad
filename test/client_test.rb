@@ -11,14 +11,14 @@ end
 
 def stub_with_body(body, response)
   stub_request(:post, url).
-    with(body: body,
-         headers: {'Authorization'=>'Basic dXNlcjpwYXNz'}).
-    to_return(response)
+  with(body: body, headers: {'Content-Type'=>'application/json'}).
+  to_return(response)
 end
 
 describe Silkroad::Client do
   before do
     @silkroad = Silkroad::Client.new('user', 'pass')
+    WebMock.reset!
   end
 
   it 'makes a call' do
@@ -44,7 +44,7 @@ describe Silkroad::Client do
           {method: 'getbalance', params: ['tyler@example.com'], jsonrpc: '2.0'},
           {method: 'notworking', params: ['derp'], jsonrpc: '2.0'}
         ].to_json,
-        headers: {'Authorization'=>'Basic dXNlcjpwYXNz', 'Content-Type'=>'application/json'}).
+        headers: {'Content-Type'=>'application/json'}).
       to_return(
         :body => [
           {result: 31337, error: nil, id: nil},

@@ -2,17 +2,17 @@ module Silkroad
   class Client
     class Error < StandardError; end
 
-    DEFAULT_PORT    = 8332
-    JSONRPC_VERSION = '2.0'
+    DEFAULT_RPC_PORT = 8332
+    TESTNET_RPC_PORT = 18332
+    JSONRPC_VERSION  = '2.0'
 
     def initialize(user, pass, opts={})
       @user        = user
       @opts        = opts
-      @url         = Addressable::URI.parse @opts[:url] || "http://localhost:#{DEFAULT_PORT}"
-      @url.port    = DEFAULT_PORT if @url.port.nil?
-
-      @http_client = HTTPClient.new
-      @http_client.set_auth @url.to_s, user, pass
+      @uri         = URI.parse @opts[:uri] || "http://localhost:#{DEFAULT_RPC_PORT}"
+      @uri.port    = DEFAULT_RPC_PORT if @opts[:uri].nil? || !@opts[:uri].match(/:80/)
+      @user        = user
+      @pass        = pass
     end
 
     def batch(requests=nil, &block)
@@ -24,7 +24,7 @@ module Silkroad
     def rpc(meth, *params)
       response = send jsonrpc: JSONRPC_VERSION, method: meth, params: params
 
-      if response.status != 200
+      if response.code != '200'
         if response.body.nil?
           raise Error.new "bitcoind returned HTTP status #{response.status} with no body: #{response.http_header.reason_phrase}"
         else
@@ -36,17 +36,24 @@ module Silkroad
       end
     end
 
-    def send(request)
-      response = @http_client.post @url, request.to_json, {'Content-Type' => 'application/json'}
-
-      if response.status == 403 && response.body.empty?
-        raise Error, '403 Forbidden - check your user/pass and/or url, and ensure IP is whitelisted for remote connections'
+    def send(formdata)
+      resp = Net::HTTP.start(@uri.host, @uri.port) do |http|
+        req = Net::HTTP::Post.new '/'
+        req.basic_auth @user, @pass
+        req.add_field 'Content-Type', 'application/json'
+        req.use_ssl = true if @uri.scheme == 'https'
+        req.body = formdata.to_json
+        http.request req
       end
-      response
+
+      if resp.code == '403' && resp.body.empty?
+        raise Error, '403 Forbidden - check your user/pass and/or uri, and ensure IP is whitelisted for remote connections'
+      end
+      resp
     end
 
     def inspect
-      "#<#{self.class} user=\"#{@user}\" @url=\"#{@url.to_s}\">"
+      "#<#{self.class} user=\"#{@user}\" @uri=\"#{@uri.to_s}\">"
     end
   end
 end
