@@ -9,8 +9,8 @@ module Silkroad
     def initialize(user, pass, opts={})
       @user        = user
       @opts        = opts
-      @uri         = URI.parse @opts[:uri] || "http://localhost:#{DEFAULT_RPC_PORT}"
-      @uri.port    = DEFAULT_RPC_PORT if @opts[:uri].nil? || !@opts[:uri].match(/:80/)
+      @uri         = URI.parse @opts[:url] || "http://localhost:#{DEFAULT_RPC_PORT}"
+      @uri.port    = DEFAULT_RPC_PORT if @opts[:url].nil? || !@opts[:url].match(/:80/)
       @user        = user
       @pass        = pass
     end
