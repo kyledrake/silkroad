@@ -2,16 +2,20 @@
 require 'rubygems'
 require './lib/silkroad.rb'
 require 'minitest/autorun'
-require 'webmock'
+require 'webmock/minitest'
 include WebMock::API
+WebMock.disable_net_connect!
 
 def url
-  'http://user:pass@localhost:8332/'
+  'http://localhost:8332/'
 end
 
 def stub_with_body(body, response)
   stub_request(:post, url).
-  with(body: body, headers: {'Content-Type'=>'application/json'}).
+  with(body: body, headers: {
+    'Content-Type'  =>'application/json',
+    'Authorization' =>'Basic dXNlcjpwYXNz'
+  }).
   to_return(response)
 end
 
@@ -23,8 +27,8 @@ describe Silkroad::Client do
 
   it 'sets url defaults correctly' do
     Proc.new { Silkroad::Client.new 'http://localhost' }.must_raise Silkroad::Client::Error
-    
-    
+
+
     silkroad = Silkroad::Client.new 'http://user:pass@localhost'
     silkroad.uri.to_s.must_equal 'http://user:pass@localhost:8332'
 
