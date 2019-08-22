@@ -4,7 +4,7 @@ module Silkroad
 
     def initialize(&block)
       @requests = []
-      instance_eval &block
+      instance_eval(&block)
     end
 
     def rpc(meth, *params)
