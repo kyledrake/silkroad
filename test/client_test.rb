@@ -41,7 +41,7 @@ describe Silkroad::Client do
 
   it 'makes a call' do
     stub_with_body(
-      {jsonrpc: "2.0", method: "getbalance", params: ["tyler@example.com"]},
+      {jsonrpc: "2.0", method: "getbalance", params: ["tyler@example.com"], id: 1},
       {status: 200, body: {result: 31337}.to_json}
     )
 
@@ -50,7 +50,7 @@ describe Silkroad::Client do
 
   it 'works with ssl' do
     stub_with_body(
-      {jsonrpc: "2.0", method: "getbalance", params: ["tyler@example.com"]},
+      {jsonrpc: "2.0", method: "getbalance", params: ["tyler@example.com"], id: 1},
       {status: 200, body: {result: 31337}.to_json},
       true
     )
@@ -61,7 +61,7 @@ describe Silkroad::Client do
 
   it 'fails with error' do
     stub_with_body(
-      {jsonrpc: "2.0", method: "failbalance", params: ["tyler@example.com"]},
+      {jsonrpc: "2.0", method: "failbalance", params: ["tyler@example.com"], id: 1},
       {status: 200, body: {result: 31337}.to_json}
     )
   end

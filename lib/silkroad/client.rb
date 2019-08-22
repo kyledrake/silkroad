@@ -21,7 +21,7 @@ module Silkroad
     end
 
     def rpc(meth, *params)
-      response = send jsonrpc: JSONRPC_VERSION, method: meth, params: params
+      response = send jsonrpc: JSONRPC_VERSION, method: meth, params: params, id: 1
 
       if response.code != '200'
         if response.body.nil?
