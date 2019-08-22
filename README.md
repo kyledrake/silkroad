@@ -21,12 +21,12 @@ Or install it yourself as:
 Initialize the client:
 
 ```ruby
-silkroad = Silkroad::Client.new 'rpcuser', 'rpcpass'
+silkroad = Silkroad::Client.new
 ```
 
-You can set a custom url:
+You can set a custom uri:
 ```ruby
-silkroad = Silkroad::Client.new 'rpcuser', 'rpcpass', url: 'https://yourbitcoinddaemon.com:31337'
+silkroad = Silkroad::Client.new 'https://rpcuser:rpcpass@yourbitcoinddaemon.com:31337'
 ```
 
 Now you can make RPC API calls (see the [API calls list](https://en.bitcoin.it/wiki/Original_Bitcoin_client/API_calls_list)). Pass params as per the spec, and the result will be returned as a primitive type (string, number, boolean, and nil) or structured type (hash, array), depending on the call:
