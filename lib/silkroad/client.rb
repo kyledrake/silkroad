@@ -36,11 +36,13 @@ module Silkroad
     end
 
     def send(formdata)
-      resp = Net::HTTP.start(@uri.host, @uri.port) do |http|
+      http = Net::HTTP.new(@uri.host, @uri.port)
+      http.use_ssl = true if @uri.scheme == 'https'
+
+      resp = http.start do
         req = Net::HTTP::Post.new '/'
         req.basic_auth @uri.user, @uri.password
         req.add_field 'Content-Type', 'application/json'
-        req.use_ssl = true if @uri.scheme == 'https'
         req.body = formdata.to_json
         http.request req
       end
